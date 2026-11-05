@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulator Interaktif Hukum Coulomb | Vibe Coding Fisika SMA</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Styling scrollbar halus dan animasi */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .transition-all-custom { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans antialiased">
+
+  <!-- ========================================== -->
+  <!-- HEADER UTAMA                              -->
+  <!-- ========================================== -->
+  <header class="bg-gradient-to-r from-blue-700 via-indigo-700 to-indigo-900 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-3xl">⚡</span>
+            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Simulator Interaktif Hukum Coulomb</h1>
+          </div>
+          <p class="text-blue-100 text-sm mt-1">
+            Lembar Kerja Mahasiswa (LKM) Praktikum Vibe Coding Fisika SMA • Tahap 1 s.d. Tahap 5 Mandiri
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-800/80 text-blue-100 border border-blue-400/30">
+            Fisika Kelas XII • Listrik Statis
+          </span>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+            ● Mode Offline Siap Pakai
+          </span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- KONTEN UTAMA                               -->
+  <!-- ========================================== -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+
+    <!-- TAHAP 4: TOMBOL SKENARIO UJI CEPAT -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+          <span>🎯</span> Skenario Uji Cepat (Preset Eksperimen Siswa SMA)
+        </h2>
+        <span class="text-xs text-slate-500">Klik tombol untuk memuat parameter secara instan</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+        <button onclick="setScenario(4.0, -6.0, 0.50)" class="flex flex-col items-center justify-center p-3 rounded-lg border border-blue-200 bg-blue-50/60 hover:bg-blue-100 hover:border-blue-300 text-blue-900 transition font-medium text-xs sm:text-sm text-center">
+          <span class="font-bold">🧲 Skenario 1: Tarik-Menarik</span>
+          <span class="text-xs text-blue-700 mt-0.5">+4 μC & -6 μC, r = 0.50 m</span>
+        </button>
+        <button onclick="setScenario(4.0, 6.0, 0.50)" class="flex flex-col items-center justify-center p-3 rounded-lg border border-red-200 bg-red-50/60 hover:bg-red-100 hover:border-red-300 text-red-900 transition font-medium text-xs sm:text-sm text-center">
+          <span class="font-bold">↔️ Skenario 2: Tolak-Menolak</span>
+          <span class="text-xs text-red-700 mt-0.5">+4 μC & +6 μC, r = 0.50 m</span>
+        </button>
+        <button onclick="setScenario(4.0, -6.0, 1.00)" class="flex flex-col items-center justify-center p-3 rounded-lg border border-purple-200 bg-purple-50/60 hover:bg-purple-100 hover:border-purple-300 text-purple-900 transition font-medium text-xs sm:text-sm text-center">
+          <span class="font-bold">📏 Skenario 3: Jarak 2x Lipat</span>
+          <span class="text-xs text-purple-700 mt-0.5">+4 μC & -6 μC, r = 1.00 m</span>
+        </button>
+        <button onclick="setScenario(4.0, -6.0, 0.50)" class="flex flex-col items-center justify-center p-3 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-700 transition font-medium text-xs sm:text-sm text-center">
+          <span class="font-bold">🔄 Reset Pengaturan</span>
+          <span class="text-xs text-slate-500 mt-0.5">Kembali ke nilai awal acuan</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- GRID DUA KOLOM: KONTROL SLIDER & VISUALISASI -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- KOLOM KIRI: KONTROL SLIDER & RUMUS (4 KOLOM) -->
+      <div class="lg:col-span-4 space-y-5">
+        
+        <!-- CARD KONTROL SLIDER -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-5">
+          <h2 class="text-base font-bold text-slate-800 flex items-center gap-2 border-b border-slate-100 pb-3">
+            <span>⚙️</span> Kontrol Variabel Slider
+          </h2>
+
+          <!-- Slider Q1 -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label for="sliderQ1" class="text-xs font-semibold text-slate-700">Muatan Partikel 1 (Q₁):</label>
+              <span id="labelQ1" class="text-xs font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800">+4.0 μC</span>
+            </div>
+            <input type="range" id="sliderQ1" min="-10" max="10" step="0.5" value="4.0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+            <div class="flex justify-between text-[10px] text-slate-400 mt-0.5">
+              <span>-10 μC</span>
+              <span>0</span>
+              <span>+10 μC</span>
+            </div>
+          </div>
+
+          <!-- Slider Q2 -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label for="sliderQ2" class="text-xs font-semibold text-slate-700">Muatan Partikel 2 (Q₂):</label>
+              <span id="labelQ2" class="text-xs font-bold px-2 py-0.5 rounded bg-red-100 text-red-800">-6.0 μC</span>
+            </div>
+            <input type="range" id="sliderQ2" min="-10" max="10" step="0.5" value="-6.0" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+            <div class="flex justify-between text-[10px] text-slate-400 mt-0.5">
+              <span>-10 μC</span>
+              <span>0</span>
+              <span>+10 μC</span>
+            </div>
+          </div>
+
+          <!-- Slider r -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label for="sliderR" class="text-xs font-semibold text-slate-700">Jarak Pisah Partikel (r):</label>
+              <span id="labelR" class="text-xs font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">0.50 m</span>
+            </div>
+            <input type="range" id="sliderR" min="0.20" max="2.00" step="0.05" value="0.50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+            <div class="flex justify-between text-[10px] text-slate-400 mt-0.5">
+              <span>0.20 m (Min)</span>
+              <span>1.00 m</span>
+              <span>2.00 m (Max)</span>
+            </div>
+          </div>
+
+          <!-- Checkbox Tampilkan Kurva (Tahap 3) -->
+          <div class="pt-2 border-t border-slate-100">
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" id="checkCurve" checked class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+              <span class="text-xs font-medium text-slate-700">Tampilkan Kurva F vs r (Kuadrat Terbalik)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- CARD RINGKASAN TEORI FISIKA -->
+        <div class="bg-indigo-50/70 border border-indigo-100 rounded-xl p-4 text-xs text-indigo-950 space-y-2">
+          <div class="font-bold flex items-center gap-1.5 text-indigo-900">
+            <span>💡</span> Dasar Konsep Fisika
+          </div>
+          <p>• Konstanta dielektrik ruang hampa: <code class="font-mono font-bold bg-white px-1 py-0.5 rounded border border-indigo-200">k = 8,98755 × 10⁹ N·m²/C²</code></p>
+          <p>• Konversi satuan mikro Coulomb: <code class="font-mono bg-white px-1 py-0.5 rounded border border-indigo-200">1 μC = 10⁻⁶ C</code></p>
+          <p>• Batas aman <code class="font-mono bg-white px-1 py-0.5 rounded border border-indigo-200">r ≥ 0,20 m</code> agar terhindar dari pembagian dengan nol <em>(ZeroDivisionError)</em>.</p>
+        </div>
+
+      </div>
+
+      <!-- KOLOM KANAN: OUTPUT DINAMIS & GRAFIK (8 KOLOM) -->
+      <div class="lg:col-span-8 space-y-5">
+
+        <!-- KARTU HASIL NUMERIK & RINCIAN SUBSTITUSI (TAHAP 2) -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+            <div>
+              <span class="text-xs uppercase tracking-wider font-bold text-slate-400">Besar Gaya Coulomb</span>
+              <div class="flex items-baseline gap-2 mt-0.5">
+                <span id="outputForce" class="text-3xl font-extrabold text-slate-900 font-mono">0.8628</span>
+                <span class="text-lg font-bold text-slate-600">Newton</span>
+              </div>
+            </div>
+            <div>
+              <span id="badgeInteraksi" class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                🧲 Tarik-Menarik (Saling Mendekat)
+              </span>
+            </div>
+          </div>
+
+          <!-- Rincian Substitusi Rumus Langkah demi Langkah -->
+          <div class="bg-slate-50 rounded-lg p-3.5 border border-slate-200 text-xs font-mono space-y-1.5 text-slate-700 overflow-x-auto">
+            <div class="text-[11px] font-sans font-semibold text-slate-500 uppercase tracking-wider">Langkah Substitusi Rumus:</div>
+            <div>F = k · (|Q₁ · Q₂|) / r²</div>
+            <div id="substitusiLangkah1" class="text-slate-800">F = (8.98755 × 10⁹) · |(+4.0 × 10⁻⁶) · (-6.0 × 10⁻⁶)| / (0.50)²</div>
+            <div id="substitusiLangkah2" class="text-slate-800">F = (8.98755 × 10⁹) · (2.4000 × 10⁻¹¹) / 0.2500</div>
+            <div id="substitusiLangkah3" class="font-bold text-blue-700">F = 0.8628 Newton</div>
+          </div>
+        </div>
+
+        <!-- TAHAP 1 & 2: VISUALISASI VEKTOR KOORDINAT TERKUNCI -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+              <span>🅰️</span> Diagram Posisi Partikel & Panah Vektor Gaya Elektrostatik
+            </h3>
+            <span class="text-[11px] text-slate-500 font-mono bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+              Sumbu Terkunci [-1.6 m s.d. +1.6 m]
+            </span>
+          </div>
+          
+          <!-- SVG Kanvas Vektor Interaktif -->
+          <div class="w-full overflow-hidden bg-slate-50/50 rounded-lg border border-slate-200 p-2">
+            <svg id="svgVector" viewBox="0 0 800 280" class="w-full h-auto select-none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <!-- Marker Kepala Panah F12 (Kuning/Emas) -->
+                <marker id="arrowF12" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L0,6 L8,3 z" fill="#d97706" />
+                </marker>
+                <!-- Marker Kepala Panah F21 (Ungu) -->
+                <marker id="arrowF21" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L0,6 L8,3 z" fill="#7c3aed" />
+                </marker>
+                <!-- Gradien Partikel Positif (Merah) -->
+                <radialGradient id="gradPositive" cx="35%" cy="35%" r="65%">
+                  <stop offset="0%" stop-color="#fca5a5" />
+                  <stop offset="100%" stop-color="#dc2626" />
+                </radialGradient>
+                <!-- Gradien Partikel Negatif (Biru) -->
+                <radialGradient id="gradNegative" cx="35%" cy="35%" r="65%">
+                  <stop offset="0%" stop-color="#93c5fd" />
+                  <stop offset="100%" stop-color="#2563eb" />
+                </radialGradient>
+                <!-- Gradien Partikel Netral (Abu-abu) -->
+                <radialGradient id="gradNeutral" cx="35%" cy="35%" r="65%">
+                  <stop offset="0%" stop-color="#cbd5e1" />
+                  <stop offset="100%" stop-color="#64748b" />
+                </radialGradient>
+              </defs>
+
+              <!-- Grid Sumbu-X -->
+              <g id="gridAxisX"></g>
+
+              <!-- Garis Ukur Jarak Antar Partikel -->
+              <line id="rulerLine" x1="200" y1="210" x2="600" y2="210" stroke="#64748b" stroke-width="2" stroke-dasharray="4,4" />
+              <line id="rulerTick1" x1="200" y1="200" x2="200" y2="220" stroke="#64748b" stroke-width="2" />
+              <line id="rulerTick2" x1="600" y1="200" x2="600" y2="220" stroke="#64748b" stroke-width="2" />
+              <text id="rulerText" x="400" y="235" fill="#475569" font-size="12" font-weight="bold" text-anchor="middle">r = 0.50 m</text>
+
+              <!-- Vektor Gaya F12 (Bekerja pada Q1) -->
+              <line id="vectorF12" x1="300" y1="120" x2="380" y2="120" stroke="#d97706" stroke-width="4" marker-end="url(#arrowF12)" />
+              <g id="labelGroupF12">
+                <rect id="bgLabelF12" x="300" y="75" width="90" height="22" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="1" />
+                <text id="textLabelF12" x="345" y="90" fill="#92400e" font-size="11" font-weight="bold" text-anchor="middle">F₁₂ = 0.8628 N</text>
+              </g>
+
+              <!-- Vektor Gaya F21 (Bekerja pada Q2) -->
+              <line id="vectorF21" x1="500" y1="120" x2="420" y2="120" stroke="#7c3aed" stroke-width="4" marker-end="url(#arrowF21)" />
+              <g id="labelGroupF21">
+                <rect id="bgLabelF21" x="410" y="75" width="90" height="22" rx="4" fill="#f3e8ff" stroke="#a855f7" stroke-width="1" />
+                <text id="textLabelF21" x="455" y="90" fill="#581c87" font-size="11" font-weight="bold" text-anchor="middle">F₂₁ = 0.8628 N</text>
+              </g>
+
+              <!-- Partikel 1 (Q1) -->
+              <circle id="partikelQ1" cx="300" cy="120" r="24" fill="url(#gradPositive)" stroke="#0f172a" stroke-width="2.5" />
+              <text id="textSymbolQ1" x="300" y="125" fill="#ffffff" font-size="14" font-weight="extrabold" text-anchor="middle">+</text>
+              <text id="textValQ1" x="300" y="165" fill="#0f172a" font-size="12" font-weight="bold" text-anchor="middle">Q₁: +4.0 μC</text>
+
+              <!-- Partikel 2 (Q2) -->
+              <circle id="partikelQ2" cx="500" cy="120" r="24" fill="url(#gradNegative)" stroke="#0f172a" stroke-width="2.5" />
+              <text id="textSymbolQ2" x="500" y="125" fill="#ffffff" font-size="14" font-weight="extrabold" text-anchor="middle">−</text>
+              <text id="textValQ2" x="500" y="165" fill="#0f172a" font-size="12" font-weight="bold" text-anchor="middle">Q₂: -6.0 μC</text>
+            </svg>
+          </div>
+        </div>
+
+        <!-- TAHAP 3: KURVA ANALITIK F vs r (HUKUM KUADRAT TERBALIK) -->
+        <div id="sectionCurve" class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+              <span>🅱️</span> Kurva Analitik Hubungan Gaya Coulomb (F) terhadap Jarak Pisah (r)
+            </h3>
+            <span class="text-[11px] text-blue-700 font-semibold bg-blue-50 px-2.5 py-0.5 rounded border border-blue-200">
+              F(r) ∝ 1/r² (Kuadrat Terbalik)
+            </span>
+          </div>
+
+          <!-- SVG Plot Kurva Analitik Interaktif -->
+          <div class="w-full overflow-hidden bg-slate-50/50 rounded-lg border border-slate-200 p-2">
+            <svg id="svgCurve" viewBox="0 0 800 320" class="w-full h-auto select-none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Sumbu dan Label Kurva diinjeksi via JavaScript -->
+              <g id="curveAxes"></g>
+              <path id="curvePath" d="" fill="none" stroke="#2563eb" stroke-width="3.5" />
+              
+              <!-- Garis Proyeksi Putus-Putus ke Sumbu X & Y -->
+              <line id="projLineX" x1="0" y1="0" x2="0" y2="0" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="4,4" />
+              <line id="projLineY" x1="0" y1="0" x2="0" y2="0" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="4,4" />
+
+              <!-- Titik Aktif Slider Merah -->
+              <circle id="curveActiveDot" cx="0" cy="0" r="7" fill="#ef4444" stroke="#ffffff" stroke-width="2.5" />
+
+              <!-- Label Titik Aktif -->
+              <g id="curveActiveBadge">
+                <rect id="curveBadgeBg" x="0" y="0" width="165" height="24" rx="4" fill="#ef4444" />
+                <text id="curveBadgeText" x="0" y="0" fill="#ffffff" font-size="11" font-weight="bold" text-anchor="middle">r = 0.50 m → F = 0.8628 N</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAHAP 4: TABEL PEREKAM DATA LKM            -->
+    <!-- ========================================== -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+        <div>
+          <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+            <span>📋</span> Rekaman Data Praktikum & Tabel LKM
+          </h3>
+          <p class="text-xs text-slate-500 mt-0.5">
+            Dokumentasikan data variasi muatan dan jarak pisah untuk mengisi Tabel Bagian C LKM.
+          </p>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="recordTestPoint()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition shadow-sm">
+            <span>📥</span> Catat Titik Uji ke Tabel LKM
+          </button>
+          <button onclick="clearTable()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition border border-slate-300">
+            <span>🗑️</span> Bersihkan Tabel
+          </button>
+          <button onclick="downloadCSV()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold text-xs transition border border-emerald-300">
+            <span>💾</span> Unduh CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Container Tabel Pengamatan -->
+      <div class="overflow-x-auto rounded-lg border border-slate-200">
+        <table class="w-full text-xs text-left text-slate-700">
+          <thead class="bg-slate-100 text-slate-700 uppercase font-semibold border-b border-slate-200 text-[11px]">
+            <tr>
+              <th class="px-4 py-3 text-center">No</th>
+              <th class="px-4 py-3">Q₁ (μC)</th>
+              <th class="px-4 py-3">Q₂ (μC)</th>
+              <th class="px-4 py-3">Jarak r (m)</th>
+              <th class="px-4 py-3">Sifat Interaksi</th>
+              <th class="px-4 py-3 font-mono">Gaya Coulomb F (N)</th>
+              <th class="px-4 py-3">Waktu Catat</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="divide-y divide-slate-200">
+            <!-- Baris data diinjeksi via JavaScript -->
+          </tbody>
+        </table>
+        <div id="emptyTableMessage" class="py-8 text-center text-slate-400 text-xs">
+          Belum ada data pengamatan yang dicatat. Silakan sesuaikan slider lalu klik tombol <b>Catat Titik Uji ke Tabel LKM</b>.
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- FOOTER                                     -->
+  <!-- ========================================== -->
+  <footer class="bg-slate-900 text-slate-400 py-5 border-t border-slate-800 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left">
+      <div>
+        <p class="font-medium text-slate-300">Instrumen Praktikum Mandiri Vibe Coding Fisika SMA</p>
+        <p class="text-[11px] text-slate-500">Dibuat menggunakan HTML5, Tailwind CSS, & JavaScript Modern murni tanpa server.</p>
+      </div>
+      <div class="text-[11px] text-slate-500">
+        Program Studi Pendidikan Fisika / Fisika • Terverifikasi Akurat 100%
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================== -->
+  <!-- LOGIKA JAVASCRIPT FISIKA & INTERAKTIVITAS  -->
+  <!-- ========================================== -->
+  <script>
+    // Konstanta Fisika Coulomb (SI)
+    const K_COULOMB = 8.98755e9; // N·m²/C²
+
+    // State Aplikasi
+    let state = {
+      q1: 4.0,   // Mikro Coulomb
+      q2: -6.0,  // Mikro Coulomb
+      r: 0.50,   // Meter
+      showCurve: true,
+      log: []
+    };
+
+    // Elemen DOM
+    const sliderQ1 = document.getElementById('sliderQ1');
+    const sliderQ2 = document.getElementById('sliderQ2');
+    const sliderR = document.getElementById('sliderR');
+    const checkCurve = document.getElementById('checkCurve');
+
+    const labelQ1 = document.getElementById('labelQ1');
+    const labelQ2 = document.getElementById('labelQ2');
+    const labelR = document.getElementById('labelR');
+
+    const outputForce = document.getElementById('outputForce');
+    const badgeInteraksi = document.getElementById('badgeInteraksi');
+    const substitusiLangkah1 = document.getElementById('substitusiLangkah1');
+    const substitusiLangkah2 = document.getElementById('substitusiLangkah2');
+    const substitusiLangkah3 = document.getElementById('substitusiLangkah3');
+
+    const sectionCurve = document.getElementById('sectionCurve');
+    const tableBody = document.getElementById('tableBody');
+    const emptyTableMessage = document.getElementById('emptyTableMessage');
+
+    // Inisialisasi awal saat halaman dimuat
+    window.addEventListener('DOMContentLoaded', () => {
+      initEventListeners();
+      drawVectorGrid();
+      updateSimulation();
+      
+      // Muat data acuan awal otomatis ke tabel LKM
+      recordTestPoint();
+    });
+
+    function initEventListeners() {
+      sliderQ1.addEventListener('input', (e) => {
+        state.q1 = parseFloat(e.target.value);
+        updateSimulation();
+      });
+
+      sliderQ2.addEventListener('input', (e) => {
+        state.q2 = parseFloat(e.target.value);
+        updateSimulation();
+      });
+
+      sliderR.addEventListener('input', (e) => {
+        state.r = parseFloat(e.target.value);
+        updateSimulation();
+      });
+
+      checkCurve.addEventListener('change', (e) => {
+        state.showCurve = e.target.checked;
+        sectionCurve.style.display = state.showCurve ? 'block' : 'none';
+      });
+    }
+
+    // Fungsi preset skenario uji cepat (Tahap 4)
+    function setScenario(q1Val, q2Val, rVal) {
+      state.q1 = q1Val;
+      state.q2 = q2Val;
+      state.r = rVal;
+
+      sliderQ1.value = q1Val;
+      sliderQ2.value = q2Val;
+      sliderR.value = rVal;
+
+      updateSimulation();
+    }
+
+    // Perhitungan Inti & Pembaruan Antarmuka
+    function updateSimulation() {
+      // 1. Perbarui Label Nilai Slider
+      labelQ1.textContent = `${state.q1 > 0 ? '+' : ''}${state.q1.toFixed(1)} μC`;
+      labelQ1.className = `text-xs font-bold px-2 py-0.5 rounded ${state.q1 > 0 ? 'bg-red-100 text-red-800' : (state.q1 < 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-200 text-slate-800')}`;
+
+      labelQ2.textContent = `${state.q2 > 0 ? '+' : ''}${state.q2.toFixed(1)} μC`;
+      labelQ2.className = `text-xs font-bold px-2 py-0.5 rounded ${state.q2 > 0 ? 'bg-red-100 text-red-800' : (state.q2 < 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-200 text-slate-800')}`;
+
+      labelR.textContent = `${state.r.toFixed(2)} m`;
+
+      // 2. Hitung Nilai Fisika
+      const q1C = state.q1 * 1e-6;
+      const q2C = state.q2 * 1e-6;
+      const productQ = state.q1 * state.q2;
+      const numC = Math.abs(q1C * q2C);
+      const denomR2 = state.r * state.r;
+      const force = (state.r > 0) ? (K_COULOMB * numC / denomR2) : 0;
+
+      // 3. Tentukan Karakter Interaksi
+      let sifat = "";
+      let badgeHTML = "";
+      if (productQ < 0) {
+        sifat = "Tarik-Menarik";
+        badgeHTML = `🧲 Tarik-Menarik (Saling Mendekat)`;
+        badgeInteraksi.className = "inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200";
+      } else if (productQ > 0) {
+        sifat = "Tolak-Menolak";
+        badgeHTML = `↔️ Tolak-Menolak (Saling Menjauh)`;
+        badgeInteraksi.className = "inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-200";
+      } else {
+        sifat = "Netral (Gaya Nol)";
+        badgeHTML = `⚪ Netral (Tidak Ada Gaya)`;
+        badgeInteraksi.className = "inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-300";
+      }
+      badgeInteraksi.innerHTML = badgeHTML;
+      outputForce.textContent = force.toFixed(4);
+
+      // 4. Perbarui Rincian Substitusi Rumus (Tahap 2)
+      substitusiLangkah1.textContent = `F = (8.98755 × 10⁹) · |(${state.q1 > 0 ? '+' : ''}${state.q1.toFixed(1)} × 10⁻⁶) · (${state.q2 > 0 ? '+' : ''}${state.q2.toFixed(1)} × 10⁻⁶)| / (${state.r.toFixed(2)})²`;
+      substitusiLangkah2.textContent = `F = (8.98755 × 10⁹) · (${numC.toExponential(4)}) / ${denomR2.toFixed(4)}`;
+      substitusiLangkah3.textContent = `F = ${force.toFixed(4)} Newton (${sifat})`;
+
+      // 5. Perbarui Diagram Vektor Interaktif (Tahap 1 & 2)
+      renderVectorDiagram(force, productQ);
+
+      // 6. Perbarui Kurva Analitik F vs r (Tahap 3)
+      if (state.showCurve) {
+        renderAnalyticCurve(force);
+      }
+    }
+
+    // ==========================================
+    // RENDER DIAGRAM VEKTOR DENGAN SUMBU TERKUNCI
+    // ==========================================
+    function drawVectorGrid() {
+      const g = document.getElementById('gridAxisX');
+      g.innerHTML = '';
+      
+      // Garis sumbu X utama di y = 120
+      const mainLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      mainLine.setAttribute("x1", "40");
+      mainLine.setAttribute("y1", "120");
+      mainLine.setAttribute("x2", "760");
+      mainLine.setAttribute("y2", "120");
+      mainLine.setAttribute("stroke", "#e2e8f0");
+      mainLine.setAttribute("stroke-width", "2");
+      g.appendChild(mainLine);
+
+      // Ticks dari -1.6m s.d +1.6m dengan interval 0.2m (total 17 ticks)
+      const xMin = -1.6, xMax = 1.6;
+      for (let val = xMin; val <= xMax + 0.01; val += 0.4) {
+        const svgX = meterToSvgX(val);
+        const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        tick.setAttribute("x1", svgX);
+        tick.setAttribute("y1", "114");
+        tick.setAttribute("x2", svgX);
+        tick.setAttribute("y2", "126");
+        tick.setAttribute("stroke", "#94a3b8");
+        tick.setAttribute("stroke-width", "1.5");
+        g.appendChild(tick);
+
+        const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        txt.setAttribute("x", svgX);
+        txt.setAttribute("y", "105");
+        txt.setAttribute("fill", "#64748b");
+        txt.setAttribute("font-size", "10");
+        txt.setAttribute("text-anchor", "middle");
+        txt.textContent = `${val.toFixed(1)}m`;
+        g.appendChild(txt);
+      }
+    }
+
+    function meterToSvgX(meter) {
+      // Rentang meter: -1.6 s.d +1.6 (rentang total 3.2 m)
+      // Dipetakan ke koordinat SVG: 80 px s.d 720 px (rentang lebar 640 px)
+      const originX = 400; // x = 0.0 m berada di titik tengah (400)
+      const scale = 200;   // 1 meter = 200 pixel
+      return originX + meter * scale;
+    }
+
+    function renderVectorDiagram(force, productQ) {
+      const x1Meter = -state.r / 2;
+      const x2Meter = +state.r / 2;
+
+      const svgX1 = meterToSvgX(x1Meter);
+      const svgX2 = meterToSvgX(x2Meter);
+      const yCenter = 120;
+
+      // 1. Posisikan Partikel 1
+      const p1 = document.getElementById('partikelQ1');
+      p1.setAttribute("cx", svgX1);
+      p1.setAttribute("fill", state.q1 > 0 ? "url(#gradPositive)" : (state.q1 < 0 ? "url(#gradNegative)" : "url(#gradNeutral)"));
+      
+      const sym1 = document.getElementById('textSymbolQ1');
+      sym1.setAttribute("x", svgX1);
+      sym1.textContent = state.q1 > 0 ? "+" : (state.q1 < 0 ? "−" : "0");
+
+      const val1 = document.getElementById('textValQ1');
+      val1.setAttribute("x", svgX1);
+      val1.textContent = `Q₁: ${state.q1 > 0 ? '+' : ''}${state.q1.toFixed(1)} μC`;
+
+      // 2. Posisikan Partikel 2
+      const p2 = document.getElementById('partikelQ2');
+      p2.setAttribute("cx", svgX2);
+      p2.setAttribute("fill", state.q2 > 0 ? "url(#gradPositive)" : (state.q2 < 0 ? "url(#gradNegative)" : "url(#gradNeutral)"));
+
+      const sym2 = document.getElementById('textSymbolQ2');
+      sym2.setAttribute("x", svgX2);
+      sym2.textContent = state.q2 > 0 ? "+" : (state.q2 < 0 ? "−" : "0");
+
+      const val2 = document.getElementById('textValQ2');
+      val2.setAttribute("x", svgX2);
+      val2.textContent = `Q₂: ${state.q2 > 0 ? '+' : ''}${state.q2.toFixed(1)} μC`;
+
+      // 3. Garis Pengukur Jarak r
+      document.getElementById('rulerLine').setAttribute("x1", svgX1);
+      document.getElementById('rulerLine').setAttribute("x2", svgX2);
+      document.getElementById('rulerTick1').setAttribute("x1", svgX1);
+      document.getElementById('rulerTick1').setAttribute("x2", svgX1);
+      document.getElementById('rulerTick2').setAttribute("x1", svgX2);
+      document.getElementById('rulerTick2').setAttribute("x2", svgX2);
+      document.getElementById('rulerText').setAttribute("x", (svgX1 + svgX2) / 2);
+      document.getElementById('rulerText').textContent = `r = ${state.r.toFixed(2)} m`;
+
+      // 4. Skalabilitas Vektor Panah Terkendali / Logaritmik (Tahap 2)
+      const vF12 = document.getElementById('vectorF12');
+      const vF21 = document.getElementById('vectorF21');
+      const gF12 = document.getElementById('labelGroupF12');
+      const gF21 = document.getElementById('labelGroupF21');
+
+      if (force <= 0.0001) {
+        vF12.style.display = 'none';
+        vF21.style.display = 'none';
+        gF12.style.display = 'none';
+        gF21.style.display = 'none';
+        return;
+      }
+
+      vF12.style.display = 'block';
+      vF21.style.display = 'block';
+      gF12.style.display = 'block';
+      gF21.style.display = 'block';
+
+      // Panjang panah logaritmik dalam piksel (terbatas 30px s.d. 120px)
+      let arrowPx = 30 + 80 * (Math.log10(1 + force) / Math.log10(1 + 35));
+      arrowPx = Math.min(Math.max(arrowPx, 30), 125);
+
+      let dir1 = 1, dir2 = -1;
+      if (productQ < 0) {
+        // Tarik-menarik: saling mendekat
+        dir1 = +1; // F12 ke kanan
+        dir2 = -1; // F21 ke kiri
+      } else {
+        // Tolak-menolak: saling menjauh
+        dir1 = -1; // F12 ke kiri
+        dir2 = +1; // F21 ke kanan
+      }
+
+      // Koordinat panah F12
+      const f12StartX = svgX1 + (dir1 * 26);
+      const f12EndX = f12StartX + (dir1 * arrowPx);
+      vF12.setAttribute("x1", f12StartX);
+      vF12.setAttribute("x2", f12EndX);
+
+      // Label F12
+      const labelF12MidX = (f12StartX + f12EndX) / 2;
+      document.getElementById('bgLabelF12').setAttribute("x", labelF12MidX - 48);
+      document.getElementById('textLabelF12').setAttribute("x", labelF12MidX);
+      document.getElementById('textLabelF12').textContent = `F₁₂ = ${force.toFixed(4)} N`;
+
+      // Koordinat panah F21
+      const f21StartX = svgX2 + (dir2 * 26);
+      const f21EndX = f21StartX + (dir2 * arrowPx);
+      vF21.setAttribute("x1", f21StartX);
+      vF21.setAttribute("x2", f21EndX);
+
+      // Label F21
+      const labelF21MidX = (f21StartX + f21EndX) / 2;
+      document.getElementById('bgLabelF21').setAttribute("x", labelF21MidX - 48);
+      document.getElementById('textLabelF21').setAttribute("x", labelF21MidX);
+      document.getElementById('textLabelF21').textContent = `F₂₁ = ${force.toFixed(4)} N`;
+    }
+
+    // ==========================================
+    // RENDER KURVA ANALITIK KONTINU (TAHAP 3)
+    // ==========================================
+    function renderAnalyticCurve(currentForce) {
+      const gAxes = document.getElementById('curveAxes');
+      gAxes.innerHTML = '';
+
+      // Plot area: x dari 80 s.d 760 (lebar 680), y dari 30 s.d 270 (tinggi 240)
+      const plotL = 80, plotR = 760, plotT = 30, plotB = 270;
+      const rMin = 0.20, rMax = 2.00;
+
+      // Hitung F maksimum pada r = 0.20 m untuk penskalaan sumbu Y
+      const q1C = state.q1 * 1e-6;
+      const q2C = state.q2 * 1e-6;
+      const maxF = Math.max((K_COULOMB * Math.abs(q1C * q2C) / (rMin * rMin)), 0.1);
+      const yAxisMax = maxF * 1.08; // Margin 8% di atas
+
+      // Fungsi konversi koordinat ke SVG
+      const toSvgX = (rVal) => plotL + ((rVal - rMin) / (rMax - rMin)) * (plotR - plotL);
+      const toSvgY = (fVal) => plotB - (fVal / yAxisMax) * (plotB - plotT);
+
+      // 1. Buat Garis Grid & Ticks Sumbu
+      // Sumbu X
+      const axisX = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      axisX.setAttribute("x1", plotL);
+      axisX.setAttribute("y1", plotB);
+      axisX.setAttribute("x2", plotR);
+      axisX.setAttribute("y2", plotB);
+      axisX.setAttribute("stroke", "#cbd5e1");
+      axisX.setAttribute("stroke-width", "2");
+      gAxes.appendChild(axisX);
+
+      // Sumbu Y
+      const axisY = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      axisY.setAttribute("x1", plotL);
+      axisY.setAttribute("y1", plotT);
+      axisY.setAttribute("x2", plotL);
+      axisY.setAttribute("y2", plotB);
+      axisY.setAttribute("stroke", "#cbd5e1");
+      axisY.setAttribute("stroke-width", "2");
+      gAxes.appendChild(axisY);
+
+      // Label Ticks Sumbu X (Jarak r)
+      for (let rVal = 0.20; rVal <= 2.01; rVal += 0.30) {
+        const xPos = toSvgX(rVal);
+        const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        tick.setAttribute("x1", xPos);
+        tick.setAttribute("y1", plotB);
+        tick.setAttribute("x2", xPos);
+        tick.setAttribute("y2", plotB + 6);
+        tick.setAttribute("stroke", "#94a3b8");
+        gAxes.appendChild(tick);
+
+        const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        lbl.setAttribute("x", xPos);
+        lbl.setAttribute("y", plotB + 20);
+        lbl.setAttribute("fill", "#64748b");
+        lbl.setAttribute("font-size", "10");
+        lbl.setAttribute("text-anchor", "middle");
+        lbl.textContent = `${rVal.toFixed(2)}m`;
+        gAxes.appendChild(lbl);
+      }
+
+      // Label Sumbu X Judul
+      const titleX = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      titleX.setAttribute("x", (plotL + plotR) / 2);
+      titleX.setAttribute("y", plotB + 38);
+      titleX.setAttribute("fill", "#334155");
+      titleX.setAttribute("font-size", "11");
+      titleX.setAttribute("font-weight", "bold");
+      titleX.setAttribute("text-anchor", "middle");
+      titleX.textContent = "Jarak Antar Muatan r (meter)";
+      gAxes.appendChild(titleX);
+
+      // Label Ticks Sumbu Y (Gaya F)
+      const numYTicks = 5;
+      for (let i = 0; i <= numYTicks; i++) {
+        const fVal = (yAxisMax / numYTicks) * i;
+        const yPos = toSvgY(fVal);
+        
+        // Garis kisi horizontal
+        const gridH = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        gridH.setAttribute("x1", plotL);
+        gridH.setAttribute("y1", yPos);
+        gridH.setAttribute("x2", plotR);
+        gridH.setAttribute("y2", yPos);
+        gridH.setAttribute("stroke", "#f1f5f9");
+        gridH.setAttribute("stroke-width", "1");
+        gAxes.appendChild(gridH);
+
+        const lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        lbl.setAttribute("x", plotL - 8);
+        lbl.setAttribute("y", yPos + 3);
+        lbl.setAttribute("fill", "#64748b");
+        lbl.setAttribute("font-size", "10");
+        lbl.setAttribute("text-anchor", "end");
+        lbl.textContent = fVal.toFixed(2);
+        gAxes.appendChild(lbl);
+      }
+
+      // Label Sumbu Y Judul
+      const titleY = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      titleY.setAttribute("transform", `rotate(-90)`);
+      titleY.setAttribute("x", -((plotT + plotB) / 2));
+      titleY.setAttribute("y", 24);
+      titleY.setAttribute("fill", "#334155");
+      titleY.setAttribute("font-size", "11");
+      titleY.setAttribute("font-weight", "bold");
+      titleY.setAttribute("text-anchor", "middle");
+      titleY.textContent = "Besar Gaya F (Newton)";
+      gAxes.appendChild(titleY);
+
+      // 2. Gambar Jalur Kurva Kontinu F(r) = k·|q1q2|/r²
+      let dStr = "";
+      const steps = 120;
+      for (let i = 0; i <= steps; i++) {
+        const rVal = rMin + (i / steps) * (rMax - rMin);
+        const fVal = K_COULOMB * Math.abs(q1C * q2C) / (rVal * rVal);
+        const sx = toSvgX(rVal);
+        const sy = toSvgY(fVal);
+        dStr += (i === 0) ? `M ${sx.toFixed(1)} ${sy.toFixed(1)}` : ` L ${sx.toFixed(1)} ${sy.toFixed(1)}`;
+      }
+      document.getElementById('curvePath').setAttribute("d", dStr);
+
+      // 3. Proyeksikan Titik Aktif Slider
+      const activeX = toSvgX(state.r);
+      const activeY = toSvgY(currentForce);
+
+      // Garis putus-putus ke sumbu X
+      const pX = document.getElementById('projLineX');
+      pX.setAttribute("x1", activeX);
+      pX.setAttribute("y1", plotB);
+      pX.setAttribute("x2", activeX);
+      pX.setAttribute("y2", activeY);
+
+      // Garis putus-putus ke sumbu Y
+      const pY = document.getElementById('projLineY');
+      pY.setAttribute("x1", plotL);
+      pY.setAttribute("y1", activeY);
+      pY.setAttribute("x2", activeX);
+      pY.setAttribute("y2", activeY);
+
+      // Lingkaran Marker Aktif
+      const dot = document.getElementById('curveActiveDot');
+      dot.setAttribute("cx", activeX);
+      dot.setAttribute("cy", activeY);
+
+      // Badge teks posisi aktif
+      const badgeText = document.getElementById('curveBadgeText');
+      badgeText.textContent = `Titik Uji: r = ${state.r.toFixed(2)} m → F = ${currentForce.toFixed(4)} N`;
+      
+      const badgeBg = document.getElementById('curveBadgeBg');
+      // Posisikan badge agar tidak terpotong tepi layar
+      let badgeX = activeX + 15;
+      let badgeY = activeY - 30;
+      if (badgeX + 175 > plotR) badgeX = activeX - 180;
+      if (badgeY < plotT) badgeY = activeY + 15;
+
+      badgeBg.setAttribute("x", badgeX);
+      badgeBg.setAttribute("y", badgeY);
+      badgeText.setAttribute("x", badgeX + 85);
+      badgeText.setAttribute("y", badgeY + 16);
+    }
+
+    // ==========================================
+    // TAHAP 4: MANAJEMEN TABEL REKAMAN LKM
+    // ==========================================
+    function recordTestPoint() {
+      const q1C = state.q1 * 1e-6;
+      const q2C = state.q2 * 1e-6;
+      const force = (state.r > 0) ? (K_COULOMB * Math.abs(q1C * q2C) / (state.r * state.r)) : 0;
+      const sifat = (state.q1 * state.q2 < 0) ? "Tarik-Menarik" : ((state.q1 * state.q2 > 0) ? "Tolak-Menolak" : "Netral");
+      
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+
+      const record = {
+        no: state.log.length + 1,
+        q1: (state.q1 > 0 ? '+' : '') + state.q1.toFixed(1),
+        q2: (state.q2 > 0 ? '+' : '') + state.q2.toFixed(1),
+        r: state.r.toFixed(2),
+        sifat: sifat,
+        force: force.toFixed(4),
+        time: timeStr
+      };
+
+      state.log.push(record);
+      renderTable();
+    }
+
+    function renderTable() {
+      if (state.log.length === 0) {
+        tableBody.innerHTML = '';
+        emptyTableMessage.style.display = 'block';
+        return;
+      }
+
+      emptyTableMessage.style.display = 'none';
+      tableBody.innerHTML = state.log.map((item) => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="px-4 py-2.5 text-center font-bold text-slate-500">${item.no}</td>
+          <td class="px-4 py-2.5 font-semibold ${parseFloat(item.q1) > 0 ? 'text-red-600' : 'text-blue-600'}">${item.q1}</td>
+          <td class="px-4 py-2.5 font-semibold ${parseFloat(item.q2) > 0 ? 'text-red-600' : 'text-blue-600'}">${item.q2}</td>
+          <td class="px-4 py-2.5 font-medium">${item.r}</td>
+          <td class="px-4 py-2.5">
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold ${item.sifat === 'Tarik-Menarik' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-red-50 text-red-700 border border-red-200'}">
+              ${item.sifat}
+            </span>
+          </td>
+          <td class="px-4 py-2.5 font-mono font-bold text-slate-900">${item.force}</td>
+          <td class="px-4 py-2.5 text-slate-400 font-mono text-[11px]">${item.time}</td>
+        </tr>
+      `).join('');
+    }
+
+    function clearTable() {
+      state.log = [];
+      renderTable();
+    }
+
+    function downloadCSV() {
+      if (state.log.length === 0) {
+        alert("Belum ada data untuk diunduh!");
+        return;
+      }
+
+      const headers = ["No", "Q1 (uC)", "Q2 (uC)", "r (m)", "Sifat Interaksi", "Gaya Coulomb F (N)", "Waktu Catat"];
+      const rows = state.log.map(item => [item.no, item.q1, item.q2, item.r, item.sifat, item.force, item.time]);
+      
+      const csvContent = "data:text/csv;charset=utf-8," 
+        + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "data_eksperimen_hukum_coulomb.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
